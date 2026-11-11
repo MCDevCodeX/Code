@@ -1,0 +1,20 @@
+name: DiscipleMinions
+main: vn.disciples.minions.DiscipleMinionsPlugin
+version: '${version}'
+api-version: '1.20'
+author: DiscipleFarm
+softdepend: [ExtraStorage, LevelingPickaxe, MMOItems, AdvancedEnchantments, floodgate, Geyser-Spigot]
+commands:
+  detu:
+    description: Hệ thống Đệ Tử
+    usage: /detu help
+permissions:
+  detu.admin:
+    description: Quản trị toàn bộ Đệ Tử
+    default: op
+  detu.give:
+    description: Tạo Đệ Tử và Thẻ Nâng Cấp
+    default: op
+  detu.limit.bypass:
+    description: Bỏ qua giới hạn số Đệ Tử sở hữu
+    default: op

@@ -1,0 +1,197 @@
+# ==========================================================
+# DiscipleMinions 0.11.0 - Hệ Thống Đệ Tử
+# Baseline API: Paper 1.20.4+ (compatibility target)
+# ==========================================================
+
+limits:
+  # Tổng Đệ Tử người chơi sở hữu: đang đặt + dạng item.
+  # 0 hoặc -1 = không giới hạn.
+  max-owned-per-player: 5
+
+minion:
+  # Chu kỳ (tick) chạy vòng xử lý Đệ Tử.
+  tick-period: 1
+  # CHỐNG LAG - Miner chưa thấy ore thì quét lại sau bấy nhiêu tick (4 tick = 0.2 giây).
+  # Tăng lên nếu nhiều Đệ Tử gây lag; giảm xuống nếu cần bắt ore generator nhanh hơn.
+  idle-scan-ticks: 4
+  # CHỐNG LAG - Mỗi tick Đệ Tử chỉ được dùng tối đa chừng này mili-giây. Phần chưa kịp xử lý
+  # sẽ làm ở tick sau (xoay vòng, không bỏ sót). Giảm nếu muốn ưu tiên TPS hơn tốc độ.
+  tick-budget-ms: 3.0
+  # Chu kỳ (tick) kiểm tra dữ liệu thay đổi để ghi file. Chỉ ghi khi có thay đổi, ghi ở thread phụ.
+  autosave-period: 200
+  hologram-height: 2.35
+  # true = Đệ Tử chỉ làm việc khi chunk của nó đang được load (không còn tự giữ/ép load chunk).
+  only-work-in-loaded-chunks: true
+  # true = tự xóa các armor stand Đệ Tử cũ (từ bản <= 0.7.1 đã lưu vào chunk) khi chunk load.
+  # Có thể tắt sau khi đã chạy server một thời gian.
+  purge-legacy-visuals: true
+  # Giới hạn số chunk được quét dọn visual cũ trong MỖI lần khởi động (chống lag khi có nhiều chunk load).
+  max-legacy-purge-chunks: 512
+  # Chu kỳ (tick) quét túi đồ để thu hồi item Đệ Tử đã bị xóa. Tăng lên nếu server đông người chơi.
+  revoked-check-period: 40
+  # Thời gian chờ người nhận xác nhận trade (giây).
+  trade-request-timeout-seconds: 60
+
+# ==========================================================
+# CẤP ĐỆ TỬ DUY NHẤT
+# Tăng cấp sẽ tăng đồng thời phạm vi + tốc độ.
+# ==========================================================
+levels:
+  max: 3
+
+  # bán kính 0=1x1, 1=3x3, 2=5x5
+  radius:
+    1: 0
+    2: 1
+    3: 2
+
+  # TỐC ĐỘ - NGUỒN DUY NHẤT. Giá trị này vừa hiển thị trong GUI vừa là tốc độ THẬT:
+  #   Miner : cooldown sau khi đào thành công = miner.base-cooldown-seconds / hệ số
+  #   Farm  : chu kỳ làm việc                = farm.base-growth-interval-seconds / hệ số
+  # (Các khóa cũ levels.miner-cooldown-seconds, farm.growth-interval-seconds theo cấp đã bị bỏ.)
+  speed-multiplier:
+    1: 1.00
+    2: 1.50
+    3: 2.00
+
+# ==========================================================
+# THẺ NÂNG CẤP
+# Player phải kéo/thả thẻ vào GUI nâng cấp.
+# Admin có thể tăng cấp trực tiếp không cần thẻ.
+# target level -> số thẻ cần dùng.
+# ==========================================================
+upgrade-card:
+  requirements:
+    2: 1
+    3: 2
+
+# ==========================================================
+# ĐỆ TỬ NÔNG SẢN
+# Danh sách crop thực tế được lưu trong allowed-items.yml và
+# quản lý trực tiếp bằng GUI Admin. farm.crops chỉ dùng làm
+# danh sách mặc định khi server chạy 0.6 lần đầu.
+# ==========================================================
+farm:
+  crops:
+    - WHEAT
+    - CARROTS
+    - POTATOES
+    - BEETROOTS
+    - NETHER_WART
+    - COCOA
+
+  replant: true
+  accelerate-growth: true
+  vertical-scan: 1
+
+  # Chu kỳ làm việc ở tốc độ 1.0x (giây). Chu kỳ thật = số này / levels.speed-multiplier.
+  base-growth-interval-seconds: 8.0
+  # Số giai đoạn cây được tăng mỗi chu kỳ (không phụ thuộc cấp; cấp chỉ ảnh hưởng chu kỳ).
+  growth-stages: 1
+
+# ==========================================================
+# ĐỆ TỬ KHOÁNG SẢN
+# Danh sách ore thực tế được lưu trong allowed-items.yml và
+# quản lý trực tiếp bằng GUI Admin. miner.ores chỉ là mặc định.
+# ==========================================================
+miner:
+  y-offset: -1
+  # Cooldown sau khi đào thành công ở tốc độ 1.0x (giây). Cooldown thật = số này / levels.speed-multiplier.
+  base-cooldown-seconds: 0.5
+  # true = Đệ Tử Khoáng Sản PHẢI có công cụ mới đào (tránh đào miễn phí sau khi công cụ hỏng).
+  require-tool: true
+  # true = phá ore kèm block update (physics). Bật nếu server dùng ore/cobble generator cần nước/lava chảy lại.
+  # false (mặc định) = không gây chuỗi block update, đỡ lag khi đào nhiều ore một lúc.
+  physics-on-break: false
+  ores:
+    - COAL_ORE
+    - IRON_ORE
+    - GOLD_ORE
+    - REDSTONE_ORE
+    - LAPIS_ORE
+    - DIAMOND_ORE
+    - EMERALD_ORE
+    - NETHER_QUARTZ_ORE
+    - NETHER_GOLD_ORE
+    - ANCIENT_DEBRIS
+    # Các ore bên dưới chỉ có ở Minecraft 1.17+. Trên server cũ hơn chúng bị bỏ qua (có log 1 dòng khi khởi động).
+    - COPPER_ORE
+    - DEEPSLATE_COAL_ORE
+    - DEEPSLATE_IRON_ORE
+    - DEEPSLATE_COPPER_ORE
+    - DEEPSLATE_GOLD_ORE
+    - DEEPSLATE_REDSTONE_ORE
+    - DEEPSLATE_LAPIS_ORE
+    - DEEPSLATE_DIAMOND_ORE
+    - DEEPSLATE_EMERALD_ORE
+
+output:
+  drop-if-full: true
+
+tool-system:
+  accept-any-item: true
+  max-stack-in-slot: 1
+  preserve-itemstack: true
+  generic-bukkit-drops: true
+
+messages:
+  prefix: '&8[&6&lĐệ Tử&8] &r'
+  no-permission: '&cBạn không có quyền sử dụng chức năng này.'
+  not-owner: '&cĐệ Tử này không thuộc về bạn.'
+
+extrastorage:
+  notifications:
+    enabled: true
+    cooldown-seconds: 8
+
+# ======== Hỗ trợ Bedrock / Geyser ========
+bedrock:
+  # false = tắt hoàn toàn mọi tính năng Bedrock
+  enabled: true
+  # Prefix mà Floodgate gắn vào đầu tên người chơi Bedrock (thường là "." hoặc rỗng nếu dùng UUID)
+  name-prefix: "."
+  # Thay các ký tự đặc biệt (✦, ➜, ...) trong tên GUI – tránh hộp vuông trên Bedrock
+  clean-symbols: true
+  # Nếu muốn tắt/thêm ký tự thay thế, chỉnh tại đây. Key = ký tự gốc, Value = thay bằng gì
+  symbol-replacements:
+    "✦": "*"
+    "➜": ">"
+    "•": "-"
+    "⚙": ""
+    "✔": "+"
+    "∞": "inf"
+    "‹": "<"
+    "›": ">"
+
+# ==========================================================
+# ĐỘ BỀN CÔNG CỤ
+# ==========================================================
+durability:
+  # Công cụ mất 1 độ bền cho mỗi block đào (có tính Unbreaking). Hết độ bền thì hỏng và bị gỡ khỏi Đệ Tử.
+  # Vật phẩm Unbreakable hoặc không có độ bền thì không bao giờ hỏng.
+  enabled: true
+  # Đệ Tử Nông Sản có trừ độ bền khi thu hoạch không (vanilla không trừ khi phá cây).
+  farm: false
+
+# ==========================================================
+# BẢO VỆ KHU VỰC (WorldGuard, GriefPrevention, Lands, Towny...)
+# ==========================================================
+protection:
+  # Gọi BlockBreakEvent NHƯ THỂ CHỦ NHÂN phá block. Plugin bảo vệ chặn thì Đệ Tử không phá/thu hoạch.
+  # Lưu ý: plugin khác lắng nghe BlockBreakEvent (log, jobs, mcMMO...) cũng sẽ thấy sự kiện này.
+  enabled: true
+  # Chủ nhân offline thì không kiểm tra quyền được:
+  #   DENY  = Đệ Tử tạm dừng (an toàn, khuyến nghị)
+  #   ALLOW = vẫn làm việc, KHÔNG kiểm tra bảo vệ (không an toàn)
+  offline-owner: DENY
+  # Block bị từ chối sẽ không kiểm tra lại trong khoảng này (giây) - giảm lag và spam tin nhắn của plugin bảo vệ.
+  denied-cache-seconds: 30
+  # Báo cho chủ nhân (tối đa 1 lần/phút mỗi Đệ Tử) khi bị chặn.
+  notify-owner: true
+  # Nếu plugin khác tắt drop trong BlockBreakEvent (auto-pickup...) thì Đệ Tử cũng không thêm drop (tránh nhân đôi).
+  respect-no-drops: true
+  # Bắn BlockBreakEvent giả để plugin bảo vệ kiểm tra quyền.
+  # false = KHÔNG bắn event: dùng cho server có plugin auto-pickup/auto-sell/jobs nghe BlockBreakEvent
+  #         (những plugin này sẽ tự cộng item cho chủ, cộng thêm drop của Đệ Tử => nhân đôi item).
+  #         Khi false, Đệ Tử chỉ kiểm tra chủ nhân offline + cache, KHÔNG còn kiểm tra vùng bảo vệ.
+  break-event: true
