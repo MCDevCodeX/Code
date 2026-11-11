@@ -1,0 +1,467 @@
+# ==========================================================================
+# gui.yml - TÊN, ẢNH CỦA TỪNG NÚT (CHUNG CHO JAVA VÀ BEDROCK)
+# ==========================================================================
+# Chỉ cần ghi những gì muốn đổi: khóa nào thiếu sẽ tự lấy giá trị mặc định trong plugin.
+# Sửa xong dùng /detu reload (không cần restart).
+#
+# Mỗi nút (buttons.<nhóm>.<tên-nút>) có tối đa 2 phần:
+#
+#   java:      Giao diện rương (người chơi Java và Bedrock khi không có Floodgate)
+#     material: tên Material (vd CHEST). "AUTO" = để plugin tự chọn theo ngữ cảnh.
+#     name:     tên hiển thị, hỗ trợ mã màu &
+#     lore:     danh sách dòng mô tả
+#     custom-model-data: số CustomModelData (0 = không dùng) - dùng với resource pack
+#     glow:     true = nhấp nháy như có enchant
+#
+#   bedrock:   Form Floodgate (người chơi Bedrock/PE)
+#     name:        dòng chữ lớn của nút
+#     description: dòng chữ nhỏ bên dưới (để "" nếu không cần)
+#     image:       ảnh bên trái nút
+#       type:  URL  = đường dẫn ảnh trên mạng (png/jpg), ví dụ https://example.com/chest.png
+#              PATH = đường dẫn texture trong resource pack Bedrock, ví dụ textures/blocks/chest_front
+#       value: để "" nếu không có ảnh
+#     Lưu ý: ảnh URL phải truy cập được từ máy người chơi; ảnh PATH cần texture tồn tại ở client.
+#
+# Biến dùng trong chữ (đặt trong dấu ngoặc nhọn), nếu nút không có biến đó thì giữ nguyên:
+#   minion.*      {level} {area} {speed} {output} {footer} | Bedrock: {state} {type} {place} {owner}
+#   manage.*      {output} {state} {storage} {action} {tool} {level} {level_next} {max}
+#                 {area} {area_next} {speed} {speed_next}
+#   player.summary {owned} {max} {placed} {item_count}   admin.* {count} {total}
+#   upgrade.*     {level} {level_status} {requirement} {action}
+#   allowed.*     {item} {material} {material_lower}    trade.* {player} {sender}
+#   Biến trong URL ảnh cũng dùng được, ví dụ cho nút trade.player:
+#     value: "https://mc-heads.net/avatar/{player}"
+# ==========================================================================
+
+texts:
+  # Dòng hiển thị khi Đệ Tử chưa có công cụ ({tool})
+  no-tool: "&8Chưa trang bị"
+  # Dòng thêm vào lore Đệ Tử trong bảng quản trị
+  admin-line: "&c⚙ &7Quản trị"
+  # Dòng cuối của icon Đệ Tử ({footer})
+  minion-footer: "&e➜ Click để quản lý"
+  # Dòng công cụ trong màn xác nhận trade
+  trade-tool-line: "&8• &7Công cụ  {tool}"
+  # Mũi tên "hiện tại → tiếp theo" trong nút nâng cấp
+  next-arrow: " &8→ &a"
+  state-on: "&aBật"
+  state-off: "&cTắt"
+  action-disable: "&e➜ Click để tắt"
+  action-enable: "&e➜ Click để bật"
+  action-upgrade: "&e➜ Click để nâng cấp"
+  action-level-up: "&e➜ Click để tăng cấp"
+  action-reclaim: "&c➜ Click để thu hồi"
+  reclaim-unavailable: "&8Đang ở dạng item"
+  max-reached: "&a✔ Đã tối đa"
+  upgrade-max-reached: "&aĐã đạt cấp tối đa"
+  level-max-tag: " &a(MAX)"
+  upgrade-requirement: "&8• &7Yêu cầu &6{count}x Thẻ Nâng Cấp"
+  # Tên các kiểu đầu ra
+  output-none: "&7Thả ra ngoài"
+  output-chest: "&6Rương/Kho"
+  output-extra-storage: "&dExtraStorage"
+  # Trạng thái kho ExtraStorage
+  storage-allowed: "&aSẵn sàng"
+  storage-full: "&cKho đầy"
+  storage-disabled: "&cKho đang tắt"
+  storage-user-unavailable: "&eChưa tải dữ liệu"
+  storage-api-unavailable: "&cAPI không khả dụng"
+  storage-unknown: "&eKhông xác định"
+  # Tên loại Đệ Tử dùng trong form Bedrock ({type})
+  type-farm: "Nông Sản"
+  type-miner: "Khoáng Sản"
+  # Trạng thái trong form Bedrock ({state})
+  state-placed: "Đặt"
+  state-item: "Túi"
+  # Vị trí trong form Bedrock ({place})
+  place-item: "Trong túi đồ"
+  place-location: "({x},{y},{z}) {world}"
+
+buttons:
+  filler:
+    java:
+      material: BLACK_STAINED_GLASS_PANE
+      name: " "
+      lore: []
+      custom-model-data: 0
+      glow: false
+
+  nav:
+    prev:
+      java:
+        material: ARROW
+        name: "&e&l‹ TRANG TRƯỚC"
+        lore: []
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Trang Trước"
+        description: ""
+        image: {type: URL, value: ""}
+    next:
+      java:
+        material: ARROW
+        name: "&e&lTRANG SAU ›"
+        lore: []
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Trang Sau"
+        description: ""
+        image: {type: URL, value: ""}
+
+  player:
+    empty:
+      java:
+        material: BARRIER
+        name: "&c✦ &fCHƯA CÓ ĐỆ TỬ"
+        lore: ["", "&7Chưa có Đệ Tử để quản lý."]
+        custom-model-data: 0
+        glow: false
+    summary:
+      java:
+        material: NETHER_STAR
+        name: "&6✦ &fTỔNG QUAN"
+        lore: ["&8• &7Sở hữu    &f{owned}&8/{max}", "&8• &7Đang đặt  &a{placed}", "&8• &7Dạng item &e{item_count}"]
+        custom-model-data: 0
+        glow: false
+
+  admin:
+    empty:
+      java:
+        material: BARRIER
+        name: "&c✦ &fKHÔNG CÓ DỮ LIỆU"
+        lore: ["", "&7Chưa có Đệ Tử trên server."]
+        custom-model-data: 0
+        glow: false
+    allowed-miner:
+      java:
+        material: DIAMOND_ORE
+        name: "&b✦ &fKHOÁNG SẢN CHO PHÉP"
+        lore: ["", "&8• &7Đang cho phép &f{count} loại", "", "&e➜ Click để chỉnh sửa"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Khoáng Sản Cho Phép"
+        description: "{count} loại"
+        image: {type: URL, value: ""}
+    allowed-farm:
+      java:
+        material: WHEAT
+        name: "&a✦ &fNÔNG SẢN CHO PHÉP"
+        lore: ["", "&8• &7Đang cho phép &f{count} loại", "", "&e➜ Click để chỉnh sửa"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Nông Sản Cho Phép"
+        description: "{count} loại"
+        image: {type: URL, value: ""}
+    summary:
+      java:
+        material: COMPASS
+        name: "&c✦ &fBẢNG QUẢN TRỊ"
+        lore: ["", "&8• &7Tổng Đệ Tử &f{total}", "", "&e➜ Click Đệ Tử để quản lý"]
+        custom-model-data: 0
+        glow: false
+
+  minion:
+    farm:
+      java:
+        material: AUTO
+        name: "&a✦ &fĐỆ TỬ NÔNG SẢN &a✦"
+        lore: ["", "&8• &7Cấp độ   &f{level}", "&8• &7Phạm vi  &b{area}", "&8• &7Tốc độ   &a{speed}", "&8• &7Đầu ra   {output}", "", "{footer}"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "[{state}] {type} Lv{level}"
+        description: "{place}"
+        image: {type: URL, value: ""}
+    miner:
+      java:
+        material: AUTO
+        name: "&b✦ &fĐỆ TỬ KHOÁNG SẢN &b✦"
+        lore: ["", "&8• &7Cấp độ   &f{level}", "&8• &7Phạm vi  &b{area}", "&8• &7Tốc độ   &a{speed}", "&8• &7Đầu ra   {output}", "", "{footer}"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "[{state}] {type} Lv{level}"
+        description: "{place}"
+        image: {type: URL, value: ""}
+    admin-farm:
+      bedrock:
+        name: "{owner} - {type} Lv{level}"
+        description: "{place}"
+        image: {type: URL, value: ""}
+    admin-miner:
+      bedrock:
+        name: "{owner} - {type} Lv{level}"
+        description: "{place}"
+        image: {type: URL, value: ""}
+
+  manage:
+    link-chest:
+      java:
+        material: CHEST
+        name: "&6✦ &fLIÊN KẾT RƯƠNG"
+        lore: ["", "&8• &7Đầu ra &f{output}", "", "&e➜ Click để liên kết"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Liên Kết Rương"
+        description: "Gắn rương đầu ra"
+        image: {type: URL, value: ""}
+    extra-storage:
+      java:
+        material: ENDER_CHEST
+        name: "&d✦ &fEXTRASTORAGE"
+        lore: ["", "&8• &7Trạng thái {state}", "&8• &7Kho       {storage}", "", "{action}"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "ExtraStorage"
+        description: "Bật/tắt kho tự động"
+        image: {type: URL, value: ""}
+    tool:
+      java:
+        material: AUTO
+        name: "&b✦ &fKHO DỤNG CỤ"
+        lore: ["", "&8• &7Công cụ {tool}", "", "&e➜ Click để mở"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Kho Dụng Cụ"
+        description: "Mở giao diện đặt công cụ"
+        image: {type: URL, value: ""}
+    upgrade:
+      java:
+        material: PAPER
+        name: "&6✦ &fNÂNG CẤP"
+        lore: ["", "&8• &7Cấp      &f{level}{level_next}", "&8• &7Phạm vi  &b{area}{area_next}", "&8• &7Tốc độ   &a{speed}{speed_next}", "", "{action}"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Nâng Cấp"
+        description: "Dùng Thẻ trong túi đồ"
+        image: {type: URL, value: ""}
+    level-up:
+      java:
+        material: EXPERIENCE_BOTTLE
+        name: "&a✦ &fTĂNG CẤP ADMIN"
+        lore: ["", "&8• &7Cấp      &f{level}&8/&f{max}", "&8• &7Phạm vi  &b{area}{area_next}", "&8• &7Tốc độ   &a{speed}{speed_next}", "", "{action}"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Tăng Cấp (Admin)"
+        description: "Không tốn thẻ"
+        image: {type: URL, value: ""}
+    level-down:
+      java:
+        material: REDSTONE
+        name: "&e✦ &fHẠ CẤP ADMIN"
+        lore: ["", "&8• &7Giảm 1 cấp", "", "&e➜ Click để hạ cấp"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Hạ Cấp (Admin)"
+        description: "Giảm 1 cấp"
+        image: {type: URL, value: ""}
+    trade:
+      java:
+        material: NAME_TAG
+        name: "&a✦ &fTRADE ĐỆ TỬ"
+        lore: ["", "&8• &7Chuyển quyền sở hữu", "", "&e➜ Click để tiếp tục"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Giao Dịch"
+        description: "Chuyển Đệ Tử cho người khác"
+        image: {type: URL, value: ""}
+    reclaim:
+      java:
+        material: NETHER_STAR
+        name: "&c✦ &fTHU HỒI"
+        lore: ["", "&8• &7Đưa Đệ Tử về inventory", "", "{action}"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Thu Hồi"
+        description: "Lấy Đệ Tử về túi đồ"
+        image: {type: URL, value: ""}
+    reclaim-admin:
+      java:
+        material: NETHER_STAR
+        name: "&6✦ &fTHU HỒI"
+        lore: ["", "&8• &7Đưa Đệ Tử về inventory", "", "&e➜ Click để thu hồi"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Thu Hồi"
+        description: "Chỉ Đệ Tử của chính bạn"
+        image: {type: URL, value: ""}
+    delete:
+      java:
+        material: REDSTONE_BLOCK
+        name: "&4✦ &cXÓA VĨNH VIỄN"
+        lore: ["", "&cKhông thể hoàn tác.", "", "&4➜ Click để xóa"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Xóa Vĩnh Viễn"
+        description: "Không thể hoàn tác"
+        image: {type: URL, value: ""}
+    back:
+      java:
+        material: ARROW
+        name: "&c‹ &fQUAY LẠI"
+        lore: []
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Quay Lại"
+        description: "Danh sách Đệ Tử"
+        image: {type: URL, value: ""}
+    back-admin:
+      java:
+        material: ARROW
+        name: "&c‹ &fQUAY LẠI"
+        lore: []
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Quay Lại"
+        description: "Bảng quản trị"
+        image: {type: URL, value: ""}
+
+  tool:
+    info:
+      java:
+        material: BOOK
+        name: "&b✦ &fDỤNG CỤ"
+        lore: ["", "&8• &7Đặt 1 item vào ô bên cạnh"]
+        custom-model-data: 0
+        glow: false
+    back:
+      java:
+        material: ARROW
+        name: "&c‹ &fQUAY LẠI"
+        lore: []
+        custom-model-data: 0
+        glow: false
+
+  upgrade:
+    info:
+      java:
+        material: BOOK
+        name: "&6✦ &fNÂNG CẤP"
+        lore: ["", "&8• &7Cấp &f{level}{level_status}", "{requirement}"]
+        custom-model-data: 0
+        glow: false
+    slot:
+      java:
+        material: HOPPER
+        name: "&6✦ &fÔ ĐẶT THẺ"
+        lore: ["", "&e➜ Kéo thẻ vào ô bên cạnh"]
+        custom-model-data: 0
+        glow: false
+    confirm:
+      java:
+        material: LIME_DYE
+        name: "&a✦ &fXÁC NHẬN"
+        lore: ["", "{action}"]
+        custom-model-data: 0
+        glow: false
+    back:
+      java:
+        material: ARROW
+        name: "&c‹ &fQUAY LẠI"
+        lore: []
+        custom-model-data: 0
+        glow: false
+
+  allowed:
+    item:
+      java:
+        material: AUTO
+        name: "&a✦ &f{item}"
+        lore: ["", "&8• &7Trạng thái &aĐược phép", "", "&c➜ Click để xóa"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Xóa: {item}"
+        description: ""
+        image: {type: URL, value: ""}
+    add:
+      java:
+        material: BOOK
+        name: "&e✦ &fTHÊM VẬT PHẨM"
+        lore: ["", "&e➜ Click item trong inventory để thêm"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Thêm Vật Phẩm"
+        description: "Chọn từ danh sách gợi ý"
+        image: {type: URL, value: ""}
+    candidate:
+      bedrock:
+        name: "{item}"
+        description: ""
+        image: {type: URL, value: ""}
+    back:
+      java:
+        material: ARROW
+        name: "&c‹ &fQUAY LẠI"
+        lore: []
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Quay Lại"
+        description: "Bảng quản trị"
+        image: {type: URL, value: ""}
+
+  trade:
+    input:
+      java:
+        material: PAPER
+        name: "&e✦ NHẬP TÊN NGƯỜI NHẬN"
+        lore: ["", "&e➜ Nhập tên rồi click Paper"]
+        custom-model-data: 0
+        glow: false
+    player:
+      bedrock:
+        name: "{player}"
+        description: ""
+        image: {type: URL, value: ""}
+    accept:
+      java:
+        material: LIME_WOOL
+        name: "&a✦ &fXÁC NHẬN"
+        lore: ["", "&8• &7Từ &f{sender}", "", "&a➜ Click để nhận"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Xác Nhận"
+        description: ""
+        image: {type: URL, value: ""}
+    reject:
+      java:
+        material: RED_WOOL
+        name: "&c✦ &fTỪ CHỐI"
+        lore: ["", "&c➜ Click để từ chối"]
+        custom-model-data: 0
+        glow: false
+      bedrock:
+        name: "Từ Chối"
+        description: ""
+        image: {type: URL, value: ""}
+
+  confirm:
+    delete:
+      bedrock:
+        name: "Xóa Vĩnh Viễn"
+        description: ""
+        image: {type: URL, value: ""}
+    cancel:
+      bedrock:
+        name: "Hủy"
+        description: ""
+        image: {type: URL, value: ""}
